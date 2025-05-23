@@ -4,15 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriVision | Prediction Result</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #FFA726;
+            --accent-color: #FF7043;
+            --dark-color: #2E7D32;
+            --light-color: #E8F5E9;
+            --highlight-color: #FFD54F;
+        }
+        
         body {
             position: relative;
             margin: 0;
             padding: 0;
             font-family: "Poppins", sans-serif;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
 
         body::before {
@@ -25,14 +36,24 @@
             background-image: url("{{url_for('static', filename='images/Background.jpg')}}");
             background-repeat: no-repeat;
             background-size: cover;
-            filter: blur(3px);
-            background-color: rgba(0, 0, 0, 0.2);
-            z-index: 1;
+            background-position: center;
+            filter: blur(5px) brightness(0.6) saturate(1.2);
+            z-index: -1;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         header {
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.95) 0%, rgba(76, 175, 80, 0.95) 100%);
             color: #fff;
             display: flex;
             justify-content: space-between;
@@ -40,127 +61,538 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 10;
-            padding: 10px 20px;
+            z-index: 100;
+            padding: 0 3rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        header.scrolled {
+            padding: 0 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
         }
 
         .logo img {
-            height: 90px;
+            height: 75px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
         }
 
         nav {
             display: flex;
-            gap: 20px;
+            gap: 35px;
         }
 
         nav a {
-            color: #fff;
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: 10px;
+            left: 0;
+            background-color: #fff;
+            transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-radius: 3px;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
         }
 
         .main-content {
-            margin-top: 80px; /* Adjust margin if needed */
+            margin-top: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: calc(100vh - 80px); /* Adjust to ensure content fits */
+            min-height: calc(100vh - 120px);
             position: relative;
             z-index: 2;
-            padding: 20px; /* Add some padding */
-            box-sizing: border-box; /* Ensure padding is included in height */
-            overflow-y: auto; /* Allow scrolling if necessary */
+            padding: 2rem;
+            box-sizing: border-box;
         }
 
         .result-container {
-            display: flex; /* Flex for column layout */
-            flex-direction: column; /* Stack elements vertically */
-            align-items: center; /* Center align items horizontally */
-            max-width: 600px; /* Limit width */
-            width: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Darker background */
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            padding: 20px; /* Added padding */
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0) 70%);
+            animation: rotate 15s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .result-image {
-            max-width: 300px; /* Limit the image width */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px; /* Space between image and text */
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .result-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
         }
 
         .result-image img {
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            border-radius: 10px;
+            display: block;
+            transition: all 0.5s ease;
         }
 
         .result-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center; /* Center align text */
+            width: 100%;
+            text-align: center;
         }
 
         h2 {
-            font-size: 2rem; /* Reduced size */
-            margin-bottom: 0.5rem;
-            text-align: center; /* Center align text */
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            font-weight: 700;
+            font-family: "Montserrat", sans-serif;
+            background: linear-gradient(to right, #fff, var(--light-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        h3 {
-            font-size: 1.5rem; /* Reduced size */
-            margin: 0.5rem 0;
-            text-align: center; /* Center align text */
+        .result-item {
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .result-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            color: var(--highlight-color);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .confidence-meter {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            width: {{ (confidence | round(2)) * 100 }}%;
+        }
+
+        .confidence-percent {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .back-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff6f61; /* Changed button color */
-            color: white;
+            margin-top: 30px;
+            appearance: none;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+            border-radius: 18px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-family: "Montserrat", sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: normal;
+            padding: 18px 36px;
+            text-align: center;
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            user-select: none;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.6s;
         }
 
         .back-button:hover {
-            background-color: #ff4f3d; /* Darker hover color */
+            transform: translateY(-7px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-button:active {
+            transform: translateY(-2px);
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+        .leaf-decoration {
+            position: absolute;
+            opacity: 0.5;
+            z-index: -1;
+            filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
+            transition: all 0.5s ease;
+        }
+
+        .leaf-1 {
+            top: 15%;
+            left: 5%;
+            width: 120px;
+            transform: rotate(-15deg);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .leaf-2 {
+            bottom: 10%;
+            right: 5%;
+            width: 150px;
+            transform: rotate(25deg);
+            animation: float 10s ease-in-out infinite 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+            50% { transform: translateY(-25px) rotate(var(--rotation)); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 0 1.5rem;
+            }
+            
+            nav {
+                gap: 20px;
+            }
+            
+            .result-container {
+                padding: 30px 20px;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .result-label {
+                font-size: 1.1rem;
+            }
+            
+            .result-value {
+                font-size: 1.2rem;
+            }
+            
+            .back-button {
+                padding: 15px 30px;
+                font-size: 1rem;
+            }
+            
+            .leaf-decoration {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header {
+                padding: 0 1rem;
+                flex-direction: column;
+            }
+            
+            nav {
+                margin-top: 10px;
+                gap: 15px;
+            }
+            
+            .main-content {
+                margin-top: 100px;
+            }
+            
+            .result-container {
+                padding: 25px 15px;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
+    <div class="particles" id="particles-js"></div>
+    
+    <header id="main-header">
         <div class="logo">
             <img src="../static/images/AgriVision.png" alt="AgriVision Logo">
         </div>
         <nav>
-            <a href="#about">About Us</a>
-            <a href="#contact">Contact</a>
+            <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
         </nav>
     </header>
+    
     <div class="main-content">
+        <img src="../static/images/leaf.png" class="leaf-decoration leaf-1" alt="Leaf decoration" style="--rotation: -15deg;">
+        <img src="../static/images/leaf2.png" class="leaf-decoration leaf-2" alt="Leaf decoration" style="--rotation: 25deg;">
+        
         <div class="result-container">
             <div class="result-image">
                 <img src="{{ user_image }}" alt="Uploaded Image of User's Plant" loading="lazy">
             </div>
+            
             <div class="result-info">
-                <a href="/" class="back-button">Upload Another Image</a>
-                <h2>Prediction Results:</h2>
-                <h3>Predicted Class: <span style="color: #ffcc00; font-weight: lighter;">{{ pred_output }}</span></h3>
-                <h3>Confidence: <span style="color: #ffcc00; font-weight: lighter;">{{ (confidence | round(2)) * 100 }}%</span></h3>
-                <h2>Treatment Solution:</h2>
-                <h3><span style="color: #ffcc00; font-weight: lighter;">{{ treatment }}</span></h3>
-                <h2>Disease Cause:</h2>
-                <h3><span style="color: #ffcc00; font-weight: lighter;">{{ cause }}</span></h3>
+                <h2>Diagnosis Results</h2>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-diagnoses"></i> Predicted Condition
+                    </div>
+                    <div class="result-value">{{ pred_output }}</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-chart-line"></i> Confidence Level
+                    </div>
+                    <div class="result-value">{{ (confidence | round(2)) * 100 }}%</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-level"></div>
+                        <div class="confidence-percent">{{ (confidence | round(2)) * 100 }}%</div>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-virus"></i> Disease Cause
+                    </div>
+                    <div class="result-value">{{ cause }}</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-prescription-bottle-alt"></i> Recommended Treatment
+                    </div>
+                    <div class="result-value">{{ treatment }}</div>
+                </div>
+                
+                <a href="/" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Analyze Another Plant
+                </a>
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Particles.js initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.4,
+                        "random": false,
+                        "anim": {
+                            "enable": false,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#ffffff",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        });
+    </script>
 </body>
 </html>
