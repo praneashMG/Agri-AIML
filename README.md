@@ -85,3 +85,6 @@ Arish Manasia
 Namitha Prakash
 
 "From pests to progress, precision is the key—empowering farmers and securing food for all." 🌾
+
+Download this and paste it in folder 
+https://drive.google.com/file/d/1Dq0G4SH7YvEnZ2s5Ij93StQaoOjRjxJB/view?usp=sharing
