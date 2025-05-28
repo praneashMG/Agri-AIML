@@ -75,16 +75,3 @@ Self-Learning System: Integration of a feedback mechanism to allow the system to
 
 Automated Notifications: Enhanced notification system, including automated email alerts for disease detection, to further engage and inform farmers.
 
-👩‍💻 Meet the Team
-Riddhesh Chaudhary
-
-Tanushree Hajare
-
-Arish Manasia
-
-Namitha Prakash
-
-"From pests to progress, precision is the key—empowering farmers and securing food for all." 🌾
-
-Download this and paste it in folder 
-https://drive.google.com/file/d/1Dq0G4SH7YvEnZ2s5Ij93StQaoOjRjxJB/view?usp=sharing
